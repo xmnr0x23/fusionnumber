@@ -30,7 +30,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numberfactorial.fuse`: Fuse to calculate the product of all positive integers less than or equal to a number.
 - `numberfloor.fuse`: Fuse to calculate the integer no less than a number.
 - `numberfromarray.fuse`: Creates a Number from an array.
-- `numbermix.fuse`: Fuse to calculate the sine of a number in radians.
+- `numbermix.fuse`: Fuse to perform a linear interpolation between two numbers.
 - `numbermultiply.fuse`: Fuse to calculate the product of two numbers.
 - `numberpower.fuse`: Fuse to calculate the power of a number.
 - `numberradianstodegrees.fuse`: Fuse to calculate the degree value of a number in radians.
