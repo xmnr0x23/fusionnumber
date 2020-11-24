@@ -36,5 +36,6 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numbersign.fuse`: Fuse to calculate the sign of a number.
 - `numbersine.fuse`: Fuse to calculate the sine of a number in radians.
 - `numbersquareroot.fuse`: Fuse to calculate the square root of a number.
+- `numberstep.fuse`: Fuse to generate a step function by comparing two values.
 - `numbersubtract.fuse`: Fuse to calculate the difference of two numbers.
 - `numbertangent.fuse`: Fuse to calculate the sine of a number in radians.
