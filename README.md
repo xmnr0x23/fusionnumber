@@ -43,6 +43,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numbermultiply.fuse`: Fuse to calculate the product of two numbers.
 - `numberpower.fuse`: Fuse to calculate the power of a number.
 - `numberradianstodegrees.fuse`: Fuse to calculate the degree value of a number in radians.
+- `numberrange.fuse`: Fuse to create a range of numbers.
 - `numbersign.fuse`: Fuse to calculate the sign of a number.
 - `numbersine.fuse`: Fuse to calculate the sine of a number in radians.
 - `numbersmoothstep.fuse`: Fuse to generate a smoothstep function.
