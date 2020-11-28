@@ -22,6 +22,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numberarccosine.fuse`: Fuse to calculate the inverse cosine of a number in radians.
 - `numberarcsine.fuse`: Fuse to calculate the inverse sine of a number in radians.
 - `numberarctangent.fuse`: Fuse to calculate the inverse tangent of a number in radians.
+- `numberarctangent2.fuse`: Fuse to calculate the arc tangent of y/x (in radians), but uses the signs of both parameters to find the quadrant of the result.
 - `numberceil.fuse`: Fuse to calculate the integer no greater than a number.
 - `numbercosine.fuse`: Fuse to calculate the cosine of a number in radians.
 - `numbercreate.fuse`: Fuse to create a Fusion Number object.
@@ -32,9 +33,13 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numberfromarray.fuse`: Fuse to Create a Number from an array.
 - `numberfrommatrix.fuse`: Fuse to calculate the sine of a number in radians.
 - `numberfromvector.fuse`: Fuse to calculate the sine of a number in radians.
+- `numberhyperboliccosine.fuse`: Fuse to calculate the hyperbolic cosine of a number in radians.
+- `numberhyperbolicsine.fuse`: Fuse to calculate the hyperbolic sine of a number in radians.
+- `numberhyperbolictangent.fuse`: Fuse to calculate the hyperbolic tangent of a number in radians.
 - `numbermax.fuse`: Fuse to calculate the maximum of two numbers.
 - `numbermin.fuse`: Fuse to calculate the minimum of two numbers.
 - `numbermix.fuse`: Fuse to perform a linear interpolation between two numbers.
+- `numbermodulus.fuse`: Fuse to calculate the remainder of the division of x by y that rounds the quotient towards zero.
 - `numbermultiply.fuse`: Fuse to calculate the product of two numbers.
 - `numberpower.fuse`: Fuse to calculate the power of a number.
 - `numberradianstodegrees.fuse`: Fuse to calculate the degree value of a number in radians.
