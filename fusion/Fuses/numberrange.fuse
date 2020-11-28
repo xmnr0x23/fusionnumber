@@ -1,0 +1,143 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberRange"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- modules
+-- ============================================================================
+local json = self and require( "dkjson" ) or nil
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Create a Fusion Number object.",
+    REGS_OpIconString = FUSE_NAME
+})
+
+function Create()
+    -- [[ Creates the user interface. ]]
+    InFrom = self:AddInput("From" , "From" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        TEC_Lines = 1,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0,
+        LINK_Main = 1,
+    })
+    
+    InTo = self:AddInput("To" , "To" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        TEC_Lines = 1,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0,
+        LINK_Main = 2,
+    })
+    
+    InStep = self:AddInput("Step" , "Step" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        TEC_Lines = 1,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 1,
+        INP_MinAllowed = 0.0001,
+        LINK_Main = 3,
+    })
+
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 0.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    -- OutNumber = self:AddOutput("Output", "Output", {
+        -- LINKID_DataType = "Number",
+        -- LINK_Main = 1
+    -- })
+    
+    OutData = self:AddOutput(
+        "Output",
+        "Output",
+        {
+            LINKID_DataType = "Text",
+            LINK_Main = 1,
+        }
+    )
+    
+end
+
+function range(from, to, step)
+    local t = {}
+    local argType = type(from)
+    step = step or 1
+
+    if argType == "number" then
+        for i = from, to, step do t[#t + 1] = i end
+    elseif argType == "string" then
+        local e = to:byte()
+        for i = from:byte(), e, step do t[#t + 1] = string.char(i) end
+    elseif argType == "table" then
+        local metaNext = getmetatable(from).__next
+
+        if metaNext then
+            local i = from
+
+            while i < to do
+                t[#t + 1] = i
+                i = metaNext(i, step)
+        end
+
+        t[#t + 1] = to
+        end
+    end
+
+    return t
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InFrom:SetAttrs({LINK_Visible = visible})
+        InTo:SetAttrs({LINK_Visible = visible})
+        InStep:SetAttrs({LINK_Visible = visible})
+    end
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local from = InFrom:GetValue(req).Value
+    local to = InTo:GetValue(req).Value
+    local step = InStep:GetValue(req).Value
+
+    local result = range(from, to, step)
+    local json_str_out = json.encode( result )
+
+    OutData:Set( req , Text( json_str_out ) )
+end
