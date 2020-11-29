@@ -9,7 +9,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 
 ## Requirements
 
-- [lua-matrix](https://github.com/davidm/lua-matrix)
+- [lua-easing](https://github.com/luapower/easing)
 
 ## Installation
 
