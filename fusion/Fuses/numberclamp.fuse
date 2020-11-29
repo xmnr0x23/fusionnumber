@@ -1,0 +1,101 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberClamp"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Clamps a number",
+    REGS_OpIconString = FUSE_NAME
+})
+
+function math.clamp(val, lower, upper)
+    assert(val and lower and upper, "not very useful error message here")
+    if lower > upper then lower, upper = upper, lower end -- swap if boundaries supplied the wrong way
+    return math.max(lower, math.min(upper, val))
+end
+
+function Create()
+    -- [[ Creates the user interface. ]]
+    InNumber = self:AddInput("Number" , "Number" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 1,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0
+    })
+    
+    InMinimum = self:AddInput("Minimum" , "Minimum" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 2,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0
+    })
+
+    InMaximum = self:AddInput("Maximum" , "Maximum" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 3,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0
+    })
+    
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 1.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    OutNumber = self:AddOutput("Output", "Output", {
+        LINKID_DataType = "Number",
+        LINK_Main = 1
+    })
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InNumber:SetAttrs({LINK_Visible = visible})
+        InMinimum:SetAttrs({LINK_Visible = visible})
+        InMaximum:SetAttrs({LINK_Visible = visible})
+    end
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local n = InNumber:GetValue(req).Value
+    local minimum = InMinimum:GetValue(req).Value
+    local maximum = InMaximum:GetValue(req).Value
+
+    local result = math.clamp(n, minimum, maximum)
+    local out = Number(result)
+    OutNumber:Set(req, out)
+end
