@@ -1,0 +1,501 @@
+Composition {
+	CurrentTime = 1059,
+	RenderRange = { 1001, 1100 },
+	GlobalRange = { 1001, 2001 },
+	CurrentID = 34,
+	HiQ = true,
+	MotionBlur = false,
+	PlaybackUpdateMode = 0,
+	Version = "Fusion Studio 9.0.2 build 15",
+	SavedOutputs = 2,
+	HeldTools = 0,
+	DisabledTools = 0,
+	LockedTools = 0,
+	AudioOffset = 0,
+	Resumable = true,
+	OutputClips = {
+	},
+	Tools = {
+		Background1 = Background {
+			Inputs = {
+				GlobalIn = Input { Value = 1001, },
+				GlobalOut = Input { Value = 2001, },
+				Width = Input { Value = 1920, },
+				Height = Input { Value = 1080, },
+				["Gamut.SLogVersion"] = Input { Value = FuID { "SLog2" }, },
+				TopLeftRed = Input { Value = 1, },
+				EffectMask = Input {
+					SourceOp = "Ellipse1",
+					Source = "Mask",
+				}
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, 181.5 } },
+		},
+		radius = Fuse.NumberCreate {
+			NameSet = true,
+			Inputs = {
+				Number = Input { Value = 0.025, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 550, 214.5 } },
+		},
+		VectorCreate1 = Fuse.VectorCreate {
+			CtrlWZoom = false,
+			Inputs = {
+				Elements = Input { Value = 2, },
+				X = Input {
+					SourceOp = "NumberAdd1",
+					Source = "Output",
+				},
+				Y = Input { Value = 0.5, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 770, 247.5 } },
+		},
+		NumberSubtract1 = Fuse.NumberSubtract {
+			Inputs = {
+				Term1 = Input { Value = 1, },
+				Term2 = Input {
+					SourceOp = "NumberMultiply1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 440, 247.5 } },
+		},
+		Ellipse2 = EllipseMask {
+			Inputs = {
+				MaskWidth = Input { Value = 1920, },
+				MaskHeight = Input { Value = 1080, },
+				PixelAspect = Input { Value = { 1, 1 }, },
+				ClippingMode = Input { Value = FuID { "None" }, },
+				Width = Input {
+					SourceOp = "radius",
+					Source = "Output",
+				},
+				Height = Input {
+					SourceOp = "radius",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1155, 148.5 } },
+		},
+		NumberMultiply1 = Fuse.NumberMultiply {
+			Inputs = {
+				Factor1 = Input {
+					SourceOp = "NumberEasing1",
+					Source = "Output",
+				},
+				Factor2 = Input { Value = 1, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 330, 247.5 } },
+		},
+		NumberAdd1 = Fuse.NumberAdd {
+			Inputs = {
+				Term1 = Input {
+					SourceOp = "NumberSubtract1",
+					Source = "Output",
+				},
+				Term2 = Input {
+					SourceOp = "NumberDivide1",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, 247.5 } },
+		},
+		NumberDivide1 = Fuse.NumberDivide {
+			Inputs = {
+				Numerator = Input {
+					SourceOp = "radius",
+					Source = "Output",
+				},
+				Denominator = Input { Value = 2, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, 214.5 } },
+		},
+		Ellipse1 = EllipseMask {
+			Inputs = {
+				MotionBlur = Input { Value = 1, },
+				Quality = Input { Value = 8, },
+				MaskWidth = Input { Value = 1920, },
+				MaskHeight = Input { Value = 1080, },
+				PixelAspect = Input { Value = { 1, 1 }, },
+				ClippingMode = Input { Value = FuID { "None" }, },
+				Width = Input {
+					SourceOp = "NumberMultiply1",
+					Source = "Output",
+				},
+				Height = Input {
+					SourceOp = "NumberMultiply1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, 148.5 } },
+		},
+		Transform1 = Transform {
+			Inputs = {
+				MotionBlur = Input { Value = 1, },
+				Quality = Input { Value = 6, },
+				Center = Input {
+					SourceOp = "VectorToPoint1",
+					Source = "Output",
+				},
+				Input = Input {
+					SourceOp = "Ellipse2",
+					Source = "Mask",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1375, 148.5 } },
+		},
+		NumberEasing1 = Fuse.NumberEasing {
+			Inputs = {
+				StartTime = Input { Value = 1001, },
+				CurrentTime = Input {
+					Value = 1059,
+					Expression = "time",
+				},
+				Duration = Input { Value = 20, },
+				Function = Input { Value = FuID { "bounce" }, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 220, 247.5 } },
+		},
+		VectorToPoint1 = Fuse.VectorToPoint {
+			Inputs = {
+				Vector = Input {
+					SourceOp = "VectorCreate1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, 247.5 } },
+		}
+	},
+	Views = {
+		{
+			FrameTypeID = "ChildFrame",
+			Mode = 3,
+			LayoutPreset = 0,
+			Left = 0,
+			Top = 27,
+			Width = 2560,
+			Height = 1283,
+			Views = ordered() {
+				Main = MultiView {
+					Active = "Flow",
+					ViewList = ordered() {
+						Flow = "FlowView",
+						Console = "ConsoleView",
+						Timeline = "TimelineView",
+						Spline = "SplineEditorView",
+						Info = "InfoView",
+						Chat = "ChatView"
+					},
+					Flow = FlowView {
+						Flags = {
+							AutoHideNavigator = true,
+							GridSnap = true,
+							AutoSnap = true,
+							ShowInstance = false,
+							FullIndicator = true
+						},
+						NavigatorSize = { 200, 140 },
+						Direction = "Horizontal",
+						PipeStyle = "Direct",
+						Scale = 1.41421,
+						Offset = { -40.8745, -31.6497 }
+					},
+					Timeline = TimelineView {
+						TreeControlState = {
+						},
+						DisplayMode = "All Tools",
+						ShowCurrentTimeTools = false,
+						Filter = "Show All",
+						ShowSelectedTools = false,
+						ShowAnimatedToolsOnly = false,
+						ShowEditBoxes = false,
+						KeyFrameView = {
+							Position = { Left = 150, Bottom = 343 },
+							ScaleX = 2.14424951267057,
+							OffsetX = 949.902534113061,
+							OffsetY = 0,
+							AutoScaling = "scroll",
+							AutoSnapTo = "frame",
+							AutoSnapToGuidelines = false,
+							GuidelinesGrabEnabled = true,
+							GuidelinesSnapTo = "frame"
+						},
+						Spreadsheet = { LeftPos = 150, Visible = false }
+					},
+					Spline = SplineEditorView {
+						LeftPos = 256,
+						ScaleX = 0.2,
+						ScaleY = 0.00338983050847458,
+						OffsetX = 969.199999999999,
+						OffsetY = 0,
+						AutoScaling = "scroll",
+						AutoSnapTo = "frame",
+						AutoSnapToGuidelines = false,
+						GuidelinesSnapTo = "frame",
+						ShowKeyMarkers = false,
+						IndependentHandles = false,
+						ShowNonSplineModifiers = false,
+						GuidelinesGrabEnabled = true,
+						ShowOneToolOnly = false,
+						ShowSelectedTools = false,
+						ShowAllInputs = false,
+						Filter = "Show All"
+					},
+				},
+				Controls = MultiView {
+					Active = "Tools",
+					ViewList = ordered() {
+						Tools = "ControlView",
+						Modifiers = "ModifierView"
+					},
+				},
+				Left = "PreviewContainer",
+				Right = "PreviewContainer",
+				Transport = "TransportView",
+				Time = "TimeView"
+			},
+			Layout = {
+				Columns = 2,
+				RatioX = 1,
+				RatioY = 1,
+				{
+					Rows = 3,
+					RatioX = 0.865362035225049,
+					RatioY = 0.0101483216237315,
+					{
+						Columns = 2,
+						RatioX = 1,
+						RatioY = 0.498039215686275,
+						{ ID = "Left", RatioX = 0.5, RatioY = 0.0094488188976378, Pop = true },
+						{ ID = "Right", RatioX = 0.5, Pop = true },
+						Pop = true
+					},
+					{ ID = "Main", RatioY = 0.456470588235294, Pop = true },
+					{ ID = "Time", SnapY = 56, Flat = true }
+				},
+				{
+					Rows = 2,
+					PixelX = 342,
+					{ ID = "Controls", RatioX = 1, RatioY = 1 },
+					{ ID = "Transport", FixedY = -2 }
+				}
+			}
+		}
+	},
+	Prefs = {
+		Comp = {
+			Memory = {
+				FramesAtOnce = 4,
+				Render = {
+					SimultaneousBranching = true
+				},
+				Interactive = {
+					SimultaneousBranching = true,
+				}
+			},
+			NumberStyles = {
+				ClipFrame = 1
+			},
+			Views = {
+				Right = {
+					Viewer = {
+						ScaleMode = 1,
+					},
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+				},
+				Left = {
+					Viewer = {
+						EnableLUTs = true,
+						LUTPlugin = "GamutViewLUT",
+						CheckerUnderlay = false,
+						Channel = 4294967295
+					},
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+				},
+				View1 = {
+					PrevCtrlInactiveColor = 0,
+					FullScreen = false,
+					PickH = 1,
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PrevCtrlActiveColor = 0,
+					AlwaysOnTop = true,
+					PickW = 1
+				},
+				RightView = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PrevCtrlInactiveColor = 4278255360,
+					PickW = 1,
+					Set = true,
+					PickH = 1,
+					PrevCtrlActiveColor = 4278190335,
+					Viewer = {
+						EnableLUTs = false,
+						LUTPlugin = "FusionViewLUT",
+						NearZ = 0,
+						FitMarginX = 0,
+						FitMarginType = 0,
+						FarZ = -1000,
+						FitMarginY = 0
+					},
+					RulersShow = true
+				},
+				LeftView = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PrevCtrlInactiveColor = 4278255360,
+					PickW = 1,
+					Set = true,
+					PickH = 1,
+					PrevCtrlActiveColor = 4278190335,
+					Viewer = {
+						EnableLUTs = true,
+						LUTPlugin = "GamutViewLUT",
+						NearZ = 0,
+						FitMarginX = 0,
+						FitMarginType = 0,
+						FarZ = -1000,
+						FitMarginY = 0
+					},
+					RulersShow = true
+				},
+				View2 = {
+					PickH = 1,
+					AlwaysOnTop = true,
+					FullScreen = false,
+					PickW = 1
+				}
+			},
+			Preview = {
+				HiQ = true,
+				SkipFrames = true,
+			},
+			FrameFormat = {
+				Name = "HD 1080",
+				Rate = 24,
+				GuideRatio = 1.77777777777778,
+				DepthFull = 3,
+				DepthPreview = 3,
+				DepthInteractive = 3,
+			},
+			LastFile = "R:\\_limbo\\NE_mtx_test\\NE_mtx_test\\Sq005\\Sq005_Sh010\\3D_Scenes\\Animation\\NE100_Sq005_Sh010_Animation_v001.fbx",
+			Unsorted = {
+				GlobalStart = 1001,
+				GlobalEnd = 2001
+			},
+			AVI = {
+				Preview = {
+					DataCheck = true,
+					Key = 15,
+					Handler = 1668707181,
+					KeyCheck = true,
+					DataRate = 300,
+					Quality = 75
+				}
+			},
+			Tweaks = {
+				GPU = {
+					Enable = 2,
+					Caching = 2
+				},
+				NumBeatTimeouts = 20,
+				DisableCancelIO = false,
+				DisableDirectReads = false,
+				GraphicsMemory = 2048
+			},
+			Paths = {
+				EnableReverseMapping = true,
+			},
+			FlowView = {
+				GridSnap = true,
+				FullToolIndicator = true,
+				ShowInstanceLinks = false,
+				RemoveRouters = false,
+				ShowHidden = false
+			},
+			QuickTime = {
+			},
+			Import = {
+				OMF = {
+					FlowFormat = 0
+				}
+			},
+			ActionStrip = {
+				ToolbarName = "Default"
+			}
+		}
+	}
+}
+
+ 
