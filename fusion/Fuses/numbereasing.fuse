@@ -1,0 +1,141 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberEasing"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- modules
+-- ============================================================================
+local easing = self and require("easing") or nil
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Performs a specific interpolation between two numbers during a defined duration.",
+    REGS_OpIconString = FUSE_NAME
+})
+
+function Create()
+    -- [[ Creates the user interface. ]]
+    InStartTime = self:AddInput("StartTime" , "StartTime" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 1,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0
+    })
+
+    InCurrentTime = self:AddInput("CurrentTime" , "CurrentTime" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 2,
+        INP_MinScale = -100,
+        INP_MaxScale = 100,
+        INP_Default = 0
+    })
+
+    InDuration = self:AddInput("Duration" , "Duration" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        LINK_Main = 3,
+        INP_MinScale = -1,
+        INP_MaxScale = 1,
+        INP_Default = 0
+    })
+
+    InFunction = self:AddInput("Function" , "Function" , {
+        LINKID_DataType = "FuID",
+        INPID_InputControl = "ComboIDControl",
+        INP_Integer = false,
+        { CCS_AddString = "Linear", CCID_AddID = "linear", },
+        { CCS_AddString = "Quad", CCID_AddID = "quad", },
+        { CCS_AddString = "Cubic", CCID_AddID = "cubic", },
+        { CCS_AddString = "Quart", CCID_AddID = "quart", },
+        { CCS_AddString = "Quint", CCID_AddID = "quint", },
+        { CCS_AddString = "Expo",  CCID_AddID = "expo", },
+        { CCS_AddString = "Sine",  CCID_AddID = "sine", },
+        { CCS_AddString = "Circ",  CCID_AddID = "circ", },
+        { CCS_AddString = "Back",  CCID_AddID = "back", },
+        { CCS_AddString = "Steps", CCID_AddID = "steps", },
+        { CCS_AddString = "Elastic", CCID_AddID = "elastic", },
+        { CCS_AddString = "Bounce", CCID_AddID = "bounce", },
+        { CCS_AddString = "SlowMo", CCID_AddID = "slowmo", },
+    })
+    
+    InWay = self:AddInput("Way" , "Way" , {
+        LINKID_DataType = "FuID",
+        INPID_InputControl = "ComboIDControl",
+        INP_Integer = false,
+        { CCS_AddString = "In", CCID_AddID = "in", },
+        { CCS_AddString = "Out", CCID_AddID = "out", },
+        { CCS_AddString = "InOut", CCID_AddID = "inout", },
+        { CCS_AddString = "OutIn", CCID_AddID = "outin", },
+    })
+    
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 0.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    OutNumber = self:AddOutput("Output", "Output", {
+        LINKID_DataType = "Number",
+        LINK_Main = 1
+    })
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InStartTime:SetAttrs({LINK_Visible = visible})
+        InCurrentTime:SetAttrs({LINK_Visible = visible})
+        InDuration:SetAttrs({LINK_Visible = visible})
+    end
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local t0 = InStartTime:GetValue(req).Value
+    local t1 = InCurrentTime:GetValue(req).Value
+    local dt = InDuration:GetValue(req).Value
+    local result
+
+    local temp = ( t1 - t0 ) / dt
+
+    
+    --             easing.ease( "quad" , "inout" , ( 1005 - 1001 ) / 10 )
+    -- local result = easing.ease( "quad" , "out" ,      t1  - t0     / dt )
+    --local result = easing.ease( "quad" , "out" , temp )
+
+    if t1 < t0 then result = 0
+    elseif  t1 > ( t0 + dt ) then result = 1
+    else result = easing.ease( "bounce" , "in" , temp )
+    end
+
+    local out = Number(result)
+    OutNumber:Set(req, out)
+end
