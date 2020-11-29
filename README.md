@@ -7,11 +7,23 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - Kristof Indeherberge
 - Cédric Duriau
 
+## Requirements
+
+- [lua-matrix](https://github.com/davidm/lua-matrix)
+
 ## Installation
+
+**FusionNumber**
 
 1. Clone or download the repository.
 2. Set the absolute path of the **./fusion** directory into the Fusion
    **UserPaths:** path mapping.
+
+**lua-easing**
+
+1. Clone or download the repository.
+2. Set the absolute path of the **./lua** directory into the Fusion
+   **LuaModules:** path mapping.
 
 ## Contents
 
