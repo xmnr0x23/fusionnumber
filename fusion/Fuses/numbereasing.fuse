@@ -122,6 +122,9 @@ function Process(req)
     local t0 = InStartTime:GetValue(req).Value
     local t1 = InCurrentTime:GetValue(req).Value
     local dt = InDuration:GetValue(req).Value
+    local f = InFunction:GetValue(req).Value
+    local way = InWay:GetValue(req).Value
+    dump(f)
     local result
 
     local temp = ( t1 - t0 ) / dt
@@ -133,7 +136,8 @@ function Process(req)
 
     if t1 < t0 then result = 0
     elseif  t1 > ( t0 + dt ) then result = 1
-    else result = easing.ease( "bounce" , "in" , temp )
+    --else result = easing.ease( "bounce" , "in" , temp )
+    else result = easing.ease( f , way , temp )
     end
 
     local out = Number(result)
