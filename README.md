@@ -41,7 +41,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numbercreate.fuse`: Fuse to create a Fusion Number object.
 - `numberdegreestoradians.fuse`: Fuse to calculate the radian value of a number in degrees.
 - `numberdivide.fuse`: Fuse to calculate the quotient of two numbers.
-- `numbereasing.fuse`: Fuse to.
+- `numberease.fuse`: Fuse to.
 - `numberfactorial.fuse`: Fuse to calculate the product of all positive integers less than or equal to a number.
 - `numberfloor.fuse`: Fuse to calculate the integer no less than a number.
 - `numberfromarray.fuse`: Fuse to Create a Number from an array.
