@@ -66,3 +66,5 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numberstep.fuse`: Fuse to generate a step function by comparing two values.
 - `numbersubtract.fuse`: Fuse to calculate the difference of two numbers.
 - `numbertangent.fuse`: Fuse to calculate the tangent of a number in radians.
+- `numbertimespeed.fuse`: 
+- `numbertimestretch.fuse`: 
