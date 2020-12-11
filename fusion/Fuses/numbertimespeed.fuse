@@ -1,0 +1,96 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberTimeSpeed"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Time based operation on numbers.",
+    REGS_OpIconString = FUSE_NAME,
+    REG_TimeVariant = true, -- required to disable caching of the current time parameter
+    REGB_Temporal = true, -- ensures reliability in Resolve 15
+})
+
+function Create()
+    -- [[ Creates the user interface. ]]
+    InNumber = self:AddInput("Input" , "Input" , {
+        LINKID_DataType = "Number",
+        INP_SendRequest = false,
+        INP_Required = false,
+        LINK_Main = 1
+    })
+
+    InSpeed = self:AddInput("Speed" , "Speed" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MinScale = -100.0,
+        INP_MaxScale = 100.0,
+        INP_Default = 0.0,
+        LINK_Main = 2
+    })
+
+    InDelay = self:AddInput("Delay" , "Delay" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MinScale = -100.0,
+        INP_MaxScale = 100.0,
+        INP_Default = 0.0,
+        LINK_Main = 3
+    })
+    
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 1.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    OutNumber = self:AddOutput("Output" , "Output" , {
+        LINKID_DataType = "Number",
+        LINK_Main = 1
+    })
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InSpeed:SetAttrs({LINK_Visible = visible})
+        InDelay:SetAttrs({LINK_Visible = visible})
+    end
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local t_current = self.Comp.CurrentTime
+    local t_globalstart = self.Comp.GlobalStart
+    local t_speed = InSpeed:GetValue(req).Value
+    local t_delay = InDelay:GetValue(req).Value
+
+    local t = ( ( ( t_current - t_delay ) - t_globalstart ) * t_speed ) + t_globalstart
+    local out = InNumber:GetSource(t, req:GetFlags())
+
+    OutNumber:Set(req, out)
+end
