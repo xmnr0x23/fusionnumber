@@ -37,6 +37,12 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 - `numberarctangent2.fuse`: Fuse to calculate the arc tangent of y/x in radians.
 - `numberceil.fuse`: Fuse to calculate the integer no greater than a number.
 - `numberclamp.fuse`: Fuse to.
+- `numbercompcurrenttime.fuse`: Fuse to.
+- `numbercompglobalend.fuse`: Fuse to.
+- `numbercompglobalstart.fuse`: Fuse to.
+- `numbercompproxyscale.fuse`: Fuse to.
+- `numbercomprenderend.fuse`: Fuse to.
+- `numbercomprenderstart.fuse`: Fuse to.
 - `numbercosine.fuse`: Fuse to calculate the cosine of a number in radians.
 - `numbercreate.fuse`: Fuse to create a Fusion Number object.
 - `numberdegreestoradians.fuse`: Fuse to calculate the radian value of a number in degrees.
