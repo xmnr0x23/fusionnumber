@@ -1,0 +1,35 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberCompProxyScale"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Returns the comp's Proxy Scale.",
+    REGS_OpIconString = FUSE_NAME,
+    REG_TimeVariant = true, -- required to disable caching of the current time parameter
+    REGB_Temporal = true, -- ensures reliability in Resolve 15
+})
+
+function Create()
+    -- [[ Creates the user interface. ]]
+
+    Output = self:AddOutput("Output" , "Output" , {
+        LINKID_DataType = "Number",
+        LINK_Main = 1
+    })
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local out = Number( self.Comp.ProxyScale )
+    Output:Set(req, out)
+end
