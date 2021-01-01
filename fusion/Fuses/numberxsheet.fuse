@@ -527,18 +527,17 @@ end
 
 function Process(req)
     -- [[ Creates the output. ]]
-    --local t = InTime:GetValue(req).Value
-    
+
     local ssf = InSourceStartFrame:GetValue(req).Value
     local tsf = InTargetStartFrame:GetValue(req).Value
     local tef = InTargetEndFrame:GetValue(req).Value
-    
+
     local rds = InRandomSeed:GetValue(req).Value
-    
+
     local xsh = InXSheet:GetValue(req).Value
     local bftime = InBeforeTime:GetValue(req).Value
     local aftime = InAfterTime:GetValue(req).Value
-    
+
     --local oiv = InRoundOutput:GetValue(req).Value
     local time = req.Time
 
@@ -616,26 +615,6 @@ function Process(req)
         retime = XSheet(xsh, tsf, time)
     end
 
-------------------------------------------------------------------- ROUNDING OF OUTPUT VALUES
-
-    -- if oiv == "Down" then
-        -- retime = math.floor(retime)
-    -- end
-    -- if oiv == "Up" then
-        -- retime = math.ceil(retime)
-    -- end
-
-------------------------------------------------------------------- OUTPUT
-
-    -- if iotype == "Numbers" then
-        -- OutNumber:Set(req, Number(retime))
-    -- elseif iotype == "Values" then
-        -- retime = InParameter:GetSource(retime, REQF_SecondaryTime)
-        -- OutNumber:Set(req, Number(retime.Value))
-    -- end
-    
     OutNumber:Set(req, Number(retime))
-    --OutNumber:Set(req, Number(retime.Value))
-    --OutNumber:Set(req, Number(23))
 
 end
