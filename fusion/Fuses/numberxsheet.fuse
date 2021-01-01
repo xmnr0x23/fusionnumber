@@ -117,7 +117,7 @@ function Create()
         INP_MaxScale = 100,
         INP_Integer = true,
         })
-        
+
     InTargetEndFrame = self:AddInput("Target End Frame", "TargetEndFrame", {
         LINKID_DataType = "Number",
         INPID_InputControl = "ScrewControl",
@@ -125,7 +125,7 @@ function Create()
         INP_MaxScale = 100,
         INP_Integer = true,
         })
-        
+
     InBeforeTime = self:AddInput("Before Time", "BeforeTime", {
         { CCS_AddString = "Constant", CCID_AddID = "Constant", },
         { CCS_AddString = "Continue", CCID_AddID = "Continue", },
@@ -139,7 +139,7 @@ function Create()
         LINKS_Name = "Before Time",
         INPID_InputControl = "ComboIDControl",
         })
-        
+
     InAfterTime = self:AddInput("After Time", "AfterTime", {
         { CCS_AddString = "Constant", CCID_AddID = "Constant", },
         { CCS_AddString = "Continue", CCID_AddID = "Continue", },
@@ -153,18 +153,7 @@ function Create()
         LINKS_Name = "After Time",
         INPID_InputControl = "ComboIDControl",
         })
-        
-    InRoundOutput = self:AddInput("Round Output Values", "RoundOutputValues", {
-        LINKID_DataType = "FuID",
-        INPID_InputControl = "MultiButtonIDControl",
-        INPID_DefaultID = "Off",
-        { MBTNC_AddButton = "Off", MBTNCID_AddID = "Off", },
-        { MBTNC_AddButton = "Down", MBTNCID_AddID = "Down", },
-        { MBTNC_AddButton = "Up", MBTNCID_AddID = "Up", },
-        MBTNC_StretchToFit = true,
-        MBTNC_ForceButtons = true,
-        })
-        
+
     OutNumber = self:AddOutput("Output" , "Output" , {
         LINKID_DataType = "Number",
         LINK_Main = 1
@@ -532,7 +521,6 @@ function XSheet(xsh, tsf, time)
     OutXFrameNumbers:SetSource(Text(xsheetoutput),0)
     OutXFrameNumbers:SetAttrs({INP_Disabled = true,})
 
-
     return xsout[time-tsf+1]
 
 end
@@ -549,8 +537,9 @@ function Process(req)
     
     local xsh = InXSheet:GetValue(req).Value
     local bftime = InBeforeTime:GetValue(req).Value
+    local aftime = InAfterTime:GetValue(req).Value
     
-    local oiv = InRoundOutput:GetValue(req).Value
+    --local oiv = InRoundOutput:GetValue(req).Value
     local time = req.Time
 
     if time < tsf then									--determine before time behaviour
@@ -629,12 +618,12 @@ function Process(req)
 
 ------------------------------------------------------------------- ROUNDING OF OUTPUT VALUES
 
-    if oiv == "Down" then
-        retime = math.floor(retime)
-    end
-    if oiv == "Up" then
-        retime = math.ceil(retime)
-    end
+    -- if oiv == "Down" then
+        -- retime = math.floor(retime)
+    -- end
+    -- if oiv == "Up" then
+        -- retime = math.ceil(retime)
+    -- end
 
 ------------------------------------------------------------------- OUTPUT
 
@@ -646,5 +635,7 @@ function Process(req)
     -- end
     
     OutNumber:Set(req, Number(retime))
+    --OutNumber:Set(req, Number(retime.Value))
+    --OutNumber:Set(req, Number(23))
 
 end
