@@ -6,6 +6,7 @@ FusionNumber is a node based math arithmetic library for Blackmagic Design Fusio
 
 - Kristof Indeherberge
 - Cédric Duriau
+- Pieter Van Houte
 
 ## Requirements
 
