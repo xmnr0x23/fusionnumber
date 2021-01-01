@@ -21,21 +21,21 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
 
 function Create()
     -- [[ Creates the user interface. ]]
-    InNumber = self:AddInput("Input" , "Input" , {
-        LINKID_DataType = "Number",
-        INP_SendRequest = false,
-        INP_Required = false,
-        LINK_Main = 1
-    })
+    -- InNumber = self:AddInput("Input" , "Input" , {
+        -- LINKID_DataType = "Number",
+        -- INP_SendRequest = false,
+        -- INP_Required = false,
+        -- LINK_Main = 1
+    -- })
 
-    InTime = self:AddInput("Time" , "Time" , {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "ScrewControl",
-        INP_MinScale = -100.0,
-        INP_MaxScale = 100.0,
-        INP_Default = 0.0,
-        LINK_Main = 2
-    })
+    -- InTime = self:AddInput("Time" , "Time" , {
+        -- LINKID_DataType = "Number",
+        -- INPID_InputControl = "ScrewControl",
+        -- INP_MinScale = -100.0,
+        -- INP_MaxScale = 100.0,
+        -- INP_Default = 0.0,
+        -- LINK_Main = 2
+    -- })
 
     InShowInput = self:AddInput("Show Input", "ShowInput", {
         LINKID_DataType = "Number",
@@ -177,8 +177,8 @@ function NotifyChanged(inp, param, time)
     if inp == InShowInput then
         local visible
         if param.Value == 1.0 then visible = true else visible = false end
-        InNumber:SetAttrs({LINK_Visible = visible})
-        InTime:SetAttrs({LINK_Visible = visible})
+        --InNumber:SetAttrs({LINK_Visible = visible})
+        --InTime:SetAttrs({LINK_Visible = visible})
     end
     
     if inp == InForceTargetRange then
@@ -527,7 +527,7 @@ end
 
 function Process(req)
     -- [[ Creates the output. ]]
-    local t = InTime:GetValue(req).Value
+    --local t = InTime:GetValue(req).Value
     
     local ssf = InSourceStartFrame:GetValue(req).Value
     local tsf = InTargetStartFrame:GetValue(req).Value
