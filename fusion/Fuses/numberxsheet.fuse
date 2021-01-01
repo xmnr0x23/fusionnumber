@@ -21,21 +21,28 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
 
 function Create()
     -- [[ Creates the user interface. ]]
-    -- InNumber = self:AddInput("Input" , "Input" , {
-        -- LINKID_DataType = "Number",
-        -- INP_SendRequest = false,
-        -- INP_Required = false,
-        -- LINK_Main = 1
-    -- })
 
-    -- InTime = self:AddInput("Time" , "Time" , {
-        -- LINKID_DataType = "Number",
-        -- INPID_InputControl = "ScrewControl",
-        -- INP_MinScale = -100.0,
-        -- INP_MaxScale = 100.0,
-        -- INP_Default = 0.0,
-        -- LINK_Main = 2
-    -- })
+    InTargetStartTime = self:AddInput("Target Start Time", "TargetStartTime", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_DoNotifyChanged  = true,		-- this if for XSheet Frame Number Output
+        INP_Default = 0,                    -- should be set to Global Start Time
+        INP_MaxScale = 100,
+        INP_Integer = true,
+        LINK_Main = 1,
+        })
+
+    InXSheetSize = self:AddInput("Xsheet Size", "XSheetSize", {
+        INP_DoNotifyChanged  = true,
+        INP_Integer = true,
+        LINKID_DataType = "Number",
+        INP_MaxScale = 100,
+        INP_MinAllowed = 1,
+        INP_Default = 30,
+        INPID_InputControl = "ScrewControl",
+        LINK_Visible = false,
+        LINK_Main = 2,
+        })
 
     InShowInput = self:AddInput("Show Input", "ShowInput", {
         LINKID_DataType = "Number",
@@ -45,41 +52,6 @@ function Create()
         INP_External = false,
         INP_DoNotifyChanged = true
     })
-
-    InSourceStartFrame = self:AddInput("Source Start Frame", "SourceStartFrame", {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "ScrewControl",
-        INP_MaxScale = 100,
-        INP_Integer = true,
-        IC_Visible = false,
-        })
-    
-    InRandomSeed = self:AddInput("Random Seed", "Randomseed", {
-        INP_Integer = true,
-        INPID_InputControl = "SliderControl",
-        LINKID_DataType = "Number",
-        INP_MaxScale = 16000,
-        INP_Default = 0,
-        IC_Visible = false,
-        })
-
-    InHold = self:AddInput("Hold", "Hold", {
-        INP_Integer = true,
-        LINKID_DataType = "Number",
-        INP_MaxScale = 100,
-        INPID_InputControl = "ScrewControl",
-        IC_Visible = false,
-        })
-    
-    InXSheetSize = self:AddInput("Xsheet Size", "XSheetSize", {
-        INP_DoNotifyChanged  = true,
-        INP_Integer = true,
-        LINKID_DataType = "Number",
-        INP_MaxScale = 100,
-        INP_MinAllowed = 1,
-        INP_Default = 30,
-        INPID_InputControl = "ScrewControl",
-        })
 
     InXSheet = self:AddInput("", "XSheet", {
 --      INP_DoNotifyChanged  = true,
@@ -103,57 +75,6 @@ function Create()
         TEC_Lines = 30,
         })
 
-    InForceTargetRange = self:AddInput("Force Target Range", "ForceTargetRange", {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "CheckboxControl",
-        INP_DoNotifyChanged  = true,
-        })
-
-    InTargetStartFrame = self:AddInput("Target Start Frame", "TargetStartFrame", {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "ScrewControl",
-        INP_DoNotifyChanged  = true,		-- this if for XSheet Frame Number Output
-        INP_Default = 0,
-        INP_MaxScale = 100,
-        INP_Integer = true,
-        })
-
-    InTargetEndFrame = self:AddInput("Target End Frame", "TargetEndFrame", {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "ScrewControl",
-        INP_Default = 120,
-        INP_MaxScale = 100,
-        INP_Integer = true,
-        })
-
-    InBeforeTime = self:AddInput("Before Time", "BeforeTime", {
-        { CCS_AddString = "Constant", CCID_AddID = "Constant", },
-        { CCS_AddString = "Continue", CCID_AddID = "Continue", },
-        { CCS_AddString = "Loop", CCID_AddID = "Loop", },
-        { CCS_AddString = "Ping Pong", CCID_AddID = "PingPong", },
-        { CCS_AddString = "Inclusive Ping Pong", CCID_AddID = "InclusivePingPong", },
-        { CCS_AddString = "Hold", CCID_AddID = "Hold", },
-        { CCS_AddString = "Random", CCID_AddID = "Random", },
-        { CCS_AddString = "Do Nothing", CCID_AddID = "DoNothing", },
-        LINKID_DataType = "FuID",
-        LINKS_Name = "Before Time",
-        INPID_InputControl = "ComboIDControl",
-        })
-
-    InAfterTime = self:AddInput("After Time", "AfterTime", {
-        { CCS_AddString = "Constant", CCID_AddID = "Constant", },
-        { CCS_AddString = "Continue", CCID_AddID = "Continue", },
-        { CCS_AddString = "Loop", CCID_AddID = "Loop", },
-        { CCS_AddString = "Ping Pong", CCID_AddID = "PingPong", },
-        { CCS_AddString = "Inclusive Ping Pong", CCID_AddID = "InclusivePingPong", },
-        { CCS_AddString = "Hold", CCID_AddID = "Hold", },
-        { CCS_AddString = "Random", CCID_AddID = "Random", },
-        { CCS_AddString = "Do Nothing", CCID_AddID = "DoNothing", },
-        LINKID_DataType = "FuID",
-        LINKS_Name = "After Time",
-        INPID_InputControl = "ComboIDControl",
-        })
-
     OutNumber = self:AddOutput("Output" , "Output" , {
         LINKID_DataType = "Number",
         LINK_Main = 1
@@ -173,23 +94,14 @@ function NotifyChanged(inp, param, time)
         :param time: Current frame number.
         :type time: float
     ]]
-    
+
     if inp == InShowInput then
         local visible
         if param.Value == 1.0 then visible = true else visible = false end
-        --InNumber:SetAttrs({LINK_Visible = visible})
-        --InTime:SetAttrs({LINK_Visible = visible})
+        InTargetStartTime:SetAttrs({LINK_Visible = visible})
+        --InXSheetSize:SetAttrs({LINK_Visible = visible})
     end
-    
-    if inp == InForceTargetRange then
-        local f = InForceTargetRange:GetSource(time, REQF_SecondaryTime).Value -- REQF_SecondaryTime flag requests values at a time other than the current time, without updating any other parameters
-        
-        InTargetStartFrame:SetAttrs({ IC_Visible = true })
-        InTargetEndFrame:SetAttrs({ IC_Visible = f == 1 })
-        InBeforeTime:SetAttrs({ IC_Visible = true })
-        InAfterTime:SetAttrs({ IC_Visible = f == 1 })
-    end
-    
+
 ------------------------------------------------------------------- XSheet UI Window Length
 
     if inp == InXSheetSize then			-- hacking UI update
@@ -207,17 +119,19 @@ end
 
 ------------------------------------------------------------------- RANDOM
 
-function Random(ssf, sef, rds, time)
-    math.randomseed(rds+time)
-    return math.random(ssf,sef)
-end
+-- function Random(ssf, sef, rds, time)
+    -- math.randomseed(rds+time)
+    -- return math.random(ssf,sef)
+-- end
 
 ------------------------------------------------------------------- HOLD
 
-function Hold(hld)
-    return hld
-end
+-- function Hold(hld)
+    -- return hld
+-- end
 
+
+-- https://www.steakunderwater.com/wesuckless/viewtopic.php?p=867#p867
 function XSheet(xsh, tsf, time)
 
     local xsstart = {}		-- intermediate xsheet table for calculations and passing values over for resequencing
@@ -521,100 +435,30 @@ function XSheet(xsh, tsf, time)
     OutXFrameNumbers:SetSource(Text(xsheetoutput),0)
     OutXFrameNumbers:SetAttrs({INP_Disabled = true,})
 
-    return xsout[time-tsf+1]
+    --dump(xsout)
+    
+    if time < tsf then
+        -- return first element
+        return xsout[1]
+    elseif time > ( tsf + #xsout - 1) then
+        -- return last element
+        return xsout[#xsout]
+    else
+        -- return interpreted xsheet
+        return xsout[time-tsf+1]
+    end
 
 end
 
 function Process(req)
     -- [[ Creates the output. ]]
 
-    local ssf = InSourceStartFrame:GetValue(req).Value
-    local tsf = InTargetStartFrame:GetValue(req).Value
-    local tef = InTargetEndFrame:GetValue(req).Value
-
-    local rds = InRandomSeed:GetValue(req).Value
-
+    local tsf = InTargetStartTime:GetValue(req).Value
     local xsh = InXSheet:GetValue(req).Value
-    local bftime = InBeforeTime:GetValue(req).Value
-    local aftime = InAfterTime:GetValue(req).Value
-
-    --local oiv = InRoundOutput:GetValue(req).Value
     local time = req.Time
 
-    if time < tsf then									--determine before time behaviour
-        if bftime == "Constant" then					--since in all modes apart from "Continue" we want to retrieve values from within the active time range, we just need to figure out which times we pick them from
-            timebf = tsf
-        elseif bftime == "Continue" then				--since "Continue" generates new values instead of values already available in the retime functions, we need to do separate calculations for all modes
-                retimebf = XSheet(xsh, tsf, tsf) - ( XSheet(xsh, tsf, tsf+1) - XSheet(xsh, tsf, tsf) ) * (tsf-time)
-        elseif bftime == "Loop" then
-            timebf = tef - (tef-time)%(tef-tsf+1)
-        elseif bftime == "PingPong" then
-            if math.floor((tsf-time)/(tef-tsf)+1)%2==1 then
-                timebf = tsf+(tef-time)%(tef-tsf)
-            else
-                timebf = tef-(tef-time)%(tef-tsf)
-            end
-        elseif bftime == "InclusivePingPong" then
-            if math.floor((tsf-time-1)/(tef-tsf+1)+1)%2==1 then
-                timebf = tsf+(tef-time)%(tef-tsf+1)
-            else
-                timebf = tef-(tef-time)%(tef-tsf+1)
-            end
-        elseif bftime == "Hold" then
-            local hldbf = InHold:GetSource(tsf).Value		
-            retimebf = Hold(hldbf)
-        elseif bftime == "Random" then
-            retimebf = Random(ssf, sef, rds, time)
-        elseif bftime == "DoNothing" then 
-            retimebf = time
-        end
-        if bftime ~= "Continue" and bftime ~= "Hold" and bftime ~= "Random" and bftime ~= "DoNothing" then
-                retimebf = XSheet(xsh, tsf, timebf)
-        end
-    end
+    local t_retime = XSheet( xsh , tsf , time )
 
-    if time > tef then									--determine after time behaviour
-        if aftime == "Constant" then					--since in all modes apart from "Continue" we want to retrieve values from within the active time range, we just need to figure out which times we pick them from
-            timeaf = tef
-        elseif aftime == "Continue" then				--since "Continue" generates new values instead of values already available in the retime functions, we need to do separate calculations for all modes
-                retimeaf = XSheet(xsh, tsf, tef) + ( XSheet(xsh, tsf, tef) - XSheet(xsh, tsf, tef-1) ) * (time-tef)
-        elseif aftime == "Loop" then
-            timeaf = tef - (tef-time)%(tef-tsf+1)
-        elseif aftime == "PingPong" then
-            if math.floor((tsf-time)/(tef-tsf)+1)%2==1 then
-                timeaf = tsf+(tef-time)%(tef-tsf)
-            else
-                timeaf = tef-(tef-time)%(tef-tsf)
-            end
-        elseif aftime == "InclusivePingPong" then
-            if math.floor((tsf-time-1)/(tef-tsf+1)+1)%2==1 then
-                timeaf = tsf+(tef-time)%(tef-tsf+1)
-            else
-                timeaf = tef-(tef-time)%(tef-tsf+1)
-            end
-        elseif aftime == "Hold" then
-            local hldaf = InHold:GetSource(tef).Value		
-            retimeaf = Hold(hldaf)
-        elseif aftime == "Random" then
-            retimeaf = Random(ssf, sef, rds, time)
-        elseif aftime == "DoNothing" then
-            retimeaf = time
-        end
-        if aftime ~= "Continue" and aftime ~= "Hold" and aftime ~= "Random" and aftime ~= "DoNothing" then
-                retimeaf = XSheet(xsh, tsf, timeaf)
-        end
-    end
-
-------------------------------------------------------------------- COLLECT ALL
-
-    if time < tsf then
-        retime = retimebf
-    elseif time > tef and ftg == 1 then
-        retime = retimeaf
-    else
-        retime = XSheet(xsh, tsf, time)
-    end
-
-    OutNumber:Set(req, Number(retime))
+    OutNumber:Set( req , Number( t_retime ) )
 
 end
