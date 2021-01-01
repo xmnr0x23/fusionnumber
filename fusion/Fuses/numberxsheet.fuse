@@ -1,0 +1,650 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "NumberXSheet"
+DATATYPE = "Number"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Number\\Temporal",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Time based operation on numbers.",
+    REGS_OpIconString = FUSE_NAME,
+    REG_TimeVariant = true, -- required to disable caching of the current time parameter
+    REGB_Temporal = true, -- ensures reliability in Resolve 15
+})
+
+function Create()
+    -- [[ Creates the user interface. ]]
+    InNumber = self:AddInput("Input" , "Input" , {
+        LINKID_DataType = "Number",
+        INP_SendRequest = false,
+        INP_Required = false,
+        LINK_Main = 1
+    })
+
+    InTime = self:AddInput("Time" , "Time" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MinScale = -100.0,
+        INP_MaxScale = 100.0,
+        INP_Default = 0.0,
+        LINK_Main = 2
+    })
+
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 1.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    InSourceStartFrame = self:AddInput("Source Start Frame", "SourceStartFrame", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MaxScale = 100,
+        INP_Integer = true,
+        IC_Visible = false,
+        })
+    
+    InRandomSeed = self:AddInput("Random Seed", "Randomseed", {
+        INP_Integer = true,
+        INPID_InputControl = "SliderControl",
+        LINKID_DataType = "Number",
+        INP_MaxScale = 16000,
+        INP_Default = 0,
+        IC_Visible = false,
+        })
+
+    InHold = self:AddInput("Hold", "Hold", {
+        INP_Integer = true,
+        LINKID_DataType = "Number",
+        INP_MaxScale = 100,
+        INPID_InputControl = "ScrewControl",
+        IC_Visible = false,
+        })
+    
+    InXSheetSize = self:AddInput("Xsheet Size", "XSheetSize", {
+        INP_DoNotifyChanged  = true,
+        INP_Integer = true,
+        LINKID_DataType = "Number",
+        INP_MaxScale = 100,
+        INP_MinAllowed = 1,
+        INP_Default = 30,
+        INPID_InputControl = "ScrewControl",
+        })
+
+    InXSheet = self:AddInput("", "XSheet", {
+--      INP_DoNotifyChanged  = true,
+        ICD_Width = 0.7,
+        INP_External = false,
+        LINKID_DataType = "Text",
+        INPID_InputControl = "TextEditControl",
+        INPS_DefaultText = "",  		-- use instead of INP_Default!
+        TEC_Lines = 30,              	-- height of text entry (default is 8)
+--      TEC_DeferSetInputs = true,   	-- call NotifyChanged when focus is lost (default is false, call on every key stroke)
+        })
+
+    OutXFrameNumbers = self:AddInput("", "XFrameNumbers", {
+        ICD_Width = 0.3,
+        INP_External = false,
+        INP_Disabled = true,
+        INP_Passive = true,
+        LINKID_DataType = "Text",
+        INPID_InputControl = "TextEditControl",
+        INPS_DefaultText = "",
+        TEC_Lines = 30,
+        })
+
+    InForceTargetRange = self:AddInput("Force Target Range", "ForceTargetRange", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_DoNotifyChanged  = true,
+        })
+
+    InTargetStartFrame = self:AddInput("Target Start Frame", "TargetStartFrame", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_DoNotifyChanged  = true,		-- this if for XSheet Frame Number Output
+        INP_Default = 0,
+        INP_MaxScale = 100,
+        INP_Integer = true,
+        })
+        
+    InTargetEndFrame = self:AddInput("Target End Frame", "TargetEndFrame", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_Default = 120,
+        INP_MaxScale = 100,
+        INP_Integer = true,
+        })
+        
+    InBeforeTime = self:AddInput("Before Time", "BeforeTime", {
+        { CCS_AddString = "Constant", CCID_AddID = "Constant", },
+        { CCS_AddString = "Continue", CCID_AddID = "Continue", },
+        { CCS_AddString = "Loop", CCID_AddID = "Loop", },
+        { CCS_AddString = "Ping Pong", CCID_AddID = "PingPong", },
+        { CCS_AddString = "Inclusive Ping Pong", CCID_AddID = "InclusivePingPong", },
+        { CCS_AddString = "Hold", CCID_AddID = "Hold", },
+        { CCS_AddString = "Random", CCID_AddID = "Random", },
+        { CCS_AddString = "Do Nothing", CCID_AddID = "DoNothing", },
+        LINKID_DataType = "FuID",
+        LINKS_Name = "Before Time",
+        INPID_InputControl = "ComboIDControl",
+        })
+        
+    InAfterTime = self:AddInput("After Time", "AfterTime", {
+        { CCS_AddString = "Constant", CCID_AddID = "Constant", },
+        { CCS_AddString = "Continue", CCID_AddID = "Continue", },
+        { CCS_AddString = "Loop", CCID_AddID = "Loop", },
+        { CCS_AddString = "Ping Pong", CCID_AddID = "PingPong", },
+        { CCS_AddString = "Inclusive Ping Pong", CCID_AddID = "InclusivePingPong", },
+        { CCS_AddString = "Hold", CCID_AddID = "Hold", },
+        { CCS_AddString = "Random", CCID_AddID = "Random", },
+        { CCS_AddString = "Do Nothing", CCID_AddID = "DoNothing", },
+        LINKID_DataType = "FuID",
+        LINKS_Name = "After Time",
+        INPID_InputControl = "ComboIDControl",
+        })
+        
+    InRoundOutput = self:AddInput("Round Output Values", "RoundOutputValues", {
+        LINKID_DataType = "FuID",
+        INPID_InputControl = "MultiButtonIDControl",
+        INPID_DefaultID = "Off",
+        { MBTNC_AddButton = "Off", MBTNCID_AddID = "Off", },
+        { MBTNC_AddButton = "Down", MBTNCID_AddID = "Down", },
+        { MBTNC_AddButton = "Up", MBTNCID_AddID = "Up", },
+        MBTNC_StretchToFit = true,
+        MBTNC_ForceButtons = true,
+        })
+        
+    OutNumber = self:AddOutput("Output" , "Output" , {
+        LINKID_DataType = "Number",
+        LINK_Main = 1
+    })
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InNumber:SetAttrs({LINK_Visible = visible})
+        InTime:SetAttrs({LINK_Visible = visible})
+    end
+    
+    if inp == InForceTargetRange then
+        local f = InForceTargetRange:GetSource(time, REQF_SecondaryTime).Value -- REQF_SecondaryTime flag requests values at a time other than the current time, without updating any other parameters
+        
+        InTargetStartFrame:SetAttrs({ IC_Visible = true })
+        InTargetEndFrame:SetAttrs({ IC_Visible = f == 1 })
+        InBeforeTime:SetAttrs({ IC_Visible = true })
+        InAfterTime:SetAttrs({ IC_Visible = f == 1 })
+    end
+    
+------------------------------------------------------------------- XSheet UI Window Length
+
+    if inp == InXSheetSize then			-- hacking UI update
+        local xsl = InXSheetSize:GetSource(time, REQF_SecondaryTime).Value
+
+        InXSheet:SetAttrs({TEC_Lines = xsl})
+        InXSheet:SetAttrs({IC_Visible = false})				-- more hacking UI update
+        InXSheet:SetAttrs({IC_Visible = true})
+        OutXFrameNumbers:SetAttrs({TEC_Lines = xsl})
+        OutXFrameNumbers:SetAttrs({IC_Visible = false})
+        OutXFrameNumbers:SetAttrs({IC_Visible = true})
+    end
+    
+end
+
+------------------------------------------------------------------- RANDOM
+
+function Random(ssf, sef, rds, time)
+    math.randomseed(rds+time)
+    return math.random(ssf,sef)
+end
+
+------------------------------------------------------------------- HOLD
+
+function Hold(hld)
+    return hld
+end
+
+function XSheet(xsh, tsf, time)
+
+    local xsstart = {}		-- intermediate xsheet table for calculations and passing values over for resequencing
+    local xs = {}			-- intermediate xsheet table for storing a line of input
+    local xsout = {}		-- the total xsheet output
+    local nums = {}			-- list of numbers in any xsheet script input line
+    local wrds = {}			-- list of words in any xsheet script input line
+    local loop = 1
+    local hold = 0
+    local step = 1
+    local skip = 0
+    local speed = 1
+
+    xshKAK = string.gsub (xsh, "[\n]", "KAK\n")
+    xshKAK = string.gsub (xshKAK, "reverse", "reverse 0")
+    --	print ("xsh:"..xsh)
+    --	print ("xshKAK:"..xshKAK)
+    for line in xshKAK:gmatch("[^\n]+") do									-- ***** GO THROUGH EVERY SINGLE LINE FROM HERE... 
+
+    --		print ("line:"..line)
+        
+        for word in line:gmatch("%a+") do
+            table.insert(wrds, (word))												--	put words in a table
+        end
+        for number in line:gmatch("%d+") do
+            table.insert(nums, tonumber(number))									--	put numbers in another table
+        end
+        
+        if nums[1] ~= nil and nums[2] == nil and wrds[1] ~= "all" then				-- then determine the starting point and put that in the xsheet already
+            table.insert(xs, nums[1])
+        end
+        
+    --		print ("nums @ start:")
+    --		dump (nums)
+    --		print ("wrds @ start:")
+    --		dump (wrds)
+    --		print ("xs @ start:")
+    --		dump (xs)
+        
+        if wrds[1] ~= nil then														-- now iterate through the words, which can be one of 6 options
+            local currentword = 1
+            local currentnumber = currentword + 1
+            local morewords = true
+            while morewords == true and nums[currentnumber] ~= nil and wrds[1] ~= "all" do
+                if wrds[currentword] == "to" then																-- TO
+    --					print ("currentword:"..wrds[currentword])
+    --					print ("currentnumber:"..nums[currentnumber])
+    --					print ("xsstart @ to:")
+    --					dump (xsstart)
+                    local countstart = 1
+                    if currentword == 1 then										-- if this is a new sequence, "to" must start from the first number
+                        countstart = nums[1]
+                    else 															-- else from the end of an existing sequence ("to" does not resequence an existing list, but adds to it)
+                        countstart = xsstart[table.getn(xsstart)]
+                    end
+                    for i = countstart + 
+                            ( ( currentnumber>2 and countstart > nums[currentnumber] ) and -1 or 				-- if starting from existing sequence and going from high to low then go from countstart -1
+                              ( currentnumber>2 and countstart <= nums[currentnumber] ) and 1 or 0 ), 			-- if starting from existing sequence and going from low to high then go from countstart +1 else go from countstart
+                            nums[currentnumber], 																-- count to "to" number 
+                            ( countstart > nums[currentnumber] and -1 or 1 ) do		-- count backwards when going from high to low (when countstart > "to" number
+                        table.insert(xs,i)
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                    
+                elseif wrds[currentword] == "step" then															-- STEP
+                    for i,v in pairs(xs) do 										-- clear xs
+                        xs[i]=nil
+                    end
+                    step = math.max(nums[currentnumber])
+                    if xsstart[1] == nil then										-- make sure there's a starting point
+                        xsstart[1] = nums[1]
+                    end
+                    local xsstartlength = table.getn(xsstart)
+                    for i = 1, xsstartlength*step, 1 do
+                        table.insert(xs, (xsstart[math.ceil(i/step)]))
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                    
+                elseif wrds[currentword] == "skip" then															-- SKIP
+                    for i,v in pairs(xs) do 										-- clear xs
+                        xs[i]=nil
+                    end
+                    skip = math.max(0,nums[currentnumber]) + 1
+                    if xsstart[1] == nil then										-- make sure there's a starting point
+                        xsstart[1] = nums[1]
+                    end
+                    local xsstartlength = table.getn(xsstart)
+                    for i = 0, xsstartlength -1 , 1 do
+                        table.insert(xs, xsstart[1 + ((math.floor(i/skip)) * skip)])
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                    
+                elseif wrds[currentword] == "speed" then														-- SPEED
+                    for i,v in pairs(xs) do 										-- clear xs
+                        xs[i]=nil
+                    end
+                    speed = math.max(1,nums[currentnumber])
+                    if xsstart[1] == nil then										-- make sure there's a starting point
+                        xsstart[1] = nums[1]
+                    end
+                    local xsstartlength = table.getn(xsstart)
+                    for i = 1, xsstartlength, speed do
+                        table.insert(xs, (xsstart[math.floor(i)]))
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                    
+                elseif wrds[currentword] == "hold" then															-- HOLD
+    --					print("xs @ hold:")
+    --					dump (xs)
+    --					print("xsstart @ hold:")
+    --					dump (xsstart)
+                    local holdframe = 1
+                    if currentword == 1 then										-- if this is a new sequence, "holdframe" is the previous number in the num list
+                        holdframe = nums[1]
+    --						print ("holdframe:"..holdframe)
+                        hold = nums[currentnumber]
+                    else 															-- else from the end of xsstart
+                        holdframe = xsstart[table.getn(xsstart)]
+                        hold = nums[currentnumber]-1
+                    end
+                    for i = 1, hold, 1 do
+                    table.insert( xs, holdframe )
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                    
+                elseif wrds[currentword] == "loop" then															-- LOOP
+                    loop = nums[currentnumber] - 1
+                    if xsstart[1] == nil then
+                        xsstart[1] = nums[1]
+                    end
+                    for i = 1, loop, 1 do
+                        for j = 1, table.getn(xsstart), 1 do
+                            table.insert (xs, xsstart[j])
+                        end
+                    end
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                    
+                
+                elseif wrds[currentword] == "reverse" then														-- REVERSE
+                
+                    if xsstart[1] ~= nil then
+                        local xsstartlength = table.getn(xsstart)
+                        for i, v in pairs(xs) do
+                        xs[i] = xsstart[xsstartlength - i +1]
+                        end
+                    else
+                    end
+                        
+                    for i,v in pairs(xsstart) do 									-- clear xsstart
+                        xsstart[i]=nil
+                    end
+                    for i,v in pairs(xs) do											-- copy xs to xsstart
+                        xsstart[i] = xs[i]
+                    end
+                end
+                
+                
+                if wrds[currentword+1] ~= nil then
+                    currentword = currentword + 1
+                    currentnumber = currentword + 1
+                else
+                    morewords = false
+                end
+                
+                
+            end
+            
+            local endlineword = table.getn(wrds)
+            if wrds[endlineword] == "KAK" then											-- KAK (end of the line is reached...)
+    --				print("add to xsheet here")
+                for i,v in pairs(xs) do													-- add xs table (line) to xs output (after newline)
+                    table.insert (xsout, xs[i])
+                end
+                for i,v in pairs(xs) do													-- clear xs for next line
+                    xs[i] = nil
+                end
+            end
+            
+            if wrds[1] == "all" and xsout[1] ~= nil then						--***** GLOBAL operations (add while loop)
+                local xsoutlength = table.getn(xsout)
+                local xsoutcopy = {}
+                for i,v in pairs(xsout) do
+                    xsoutcopy[i] = xsout[i]
+                end
+                if wrds[2] == "reverse" then											-- REVERSE
+                    for i, v in pairs(xsout) do
+                    xsout[i] = xsoutcopy[xsoutlength - i +1]
+                    end
+                end
+                
+                if wrds[2] == "speed" and nums[1] ~= nil then							-- SPEED
+                local allspeed = math.max(1,nums[1])
+                for i,v in pairs(xsout) do
+                    xsout[i] = nil
+                end
+                for i = 1, xsoutlength, allspeed do
+                        table.insert(xsout, (xsoutcopy[math.floor(i)]))
+                    end
+                end
+                
+                if wrds[2] == "step" and nums[1] ~= nil then							-- STEP
+                local allstep = math.max(1, nums[1])
+                for i,v in pairs(xsout) do
+                    xsout[i] = nil
+                end
+                for i = 1, xsoutlength*allstep, 1 do
+                        table.insert(xsout, (xsoutcopy[math.ceil(i/allstep)]))
+                    end
+                end
+                
+                if wrds[2] == "skip" and nums[1] ~= nil then							-- SKIP
+                local allskip = math.max(0,nums[1]) + 1
+                for i,v in pairs(xsout) do
+                    xsout[i] = nil
+                end
+                for i = 0, xsoutlength -1 , 1 do
+                        table.insert(xsout, xsoutcopy[1 + ((math.floor(i/allskip)) * allskip)])
+                    end
+                end
+                
+                if wrds[2] == "loop" and nums[1] ~= nil then							-- LOOP
+                local allloop = nums[1] - 1
+                for i = 1, allloop, 1 do
+                    for j = 1, xsoutlength, 1 do
+                        table.insert (xsout, xsoutcopy[j])
+                    end
+                end
+                end
+            end																	--***** END GLOBAL operations
+        end
+
+        for i,v in pairs(wrds) do 
+            wrds[i]=nil
+        end																				-- clear the tables
+        for j,w in pairs(nums) do
+            nums[j]=nil
+        end
+        for k,x in pairs(xsstart) do
+            xsstart[x] = nil
+        end
+        
+        loop = 1																		-- reset all variables
+        hold = 0
+        step = 1
+        skip = 0
+        speed = 1
+        lstart = 1
+        lend = 1
+    end																		-- ***** ...TO HERE
+
+    --	print ("xs @ end:")
+    --	dump (xs)
+
+    for f,s in pairs(xs) do				-- add xs table (line) to xs output (before newline)
+        table.insert(xsout, xs[f])
+    end
+
+    local xsheetoutput = ""
+    local t = 0
+    for f,s in pairs(xsout) do
+        xsheetoutput = xsheetoutput..(tsf+t).."  --  "..s.."\n"
+        t = t + 1
+    end
+
+    OutXFrameNumbers:SetAttrs({INP_Disabled = false,})
+    OutXFrameNumbers:SetSource(Text(xsheetoutput),0)
+    OutXFrameNumbers:SetAttrs({INP_Disabled = true,})
+
+
+    return xsout[time-tsf+1]
+
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    local t = InTime:GetValue(req).Value
+    
+    local ssf = InSourceStartFrame:GetValue(req).Value
+    local tsf = InTargetStartFrame:GetValue(req).Value
+    local tef = InTargetEndFrame:GetValue(req).Value
+    
+    local rds = InRandomSeed:GetValue(req).Value
+    
+    local xsh = InXSheet:GetValue(req).Value
+    local bftime = InBeforeTime:GetValue(req).Value
+    
+    local oiv = InRoundOutput:GetValue(req).Value
+    local time = req.Time
+
+    if time < tsf then									--determine before time behaviour
+        if bftime == "Constant" then					--since in all modes apart from "Continue" we want to retrieve values from within the active time range, we just need to figure out which times we pick them from
+            timebf = tsf
+        elseif bftime == "Continue" then				--since "Continue" generates new values instead of values already available in the retime functions, we need to do separate calculations for all modes
+                retimebf = XSheet(xsh, tsf, tsf) - ( XSheet(xsh, tsf, tsf+1) - XSheet(xsh, tsf, tsf) ) * (tsf-time)
+        elseif bftime == "Loop" then
+            timebf = tef - (tef-time)%(tef-tsf+1)
+        elseif bftime == "PingPong" then
+            if math.floor((tsf-time)/(tef-tsf)+1)%2==1 then
+                timebf = tsf+(tef-time)%(tef-tsf)
+            else
+                timebf = tef-(tef-time)%(tef-tsf)
+            end
+        elseif bftime == "InclusivePingPong" then
+            if math.floor((tsf-time-1)/(tef-tsf+1)+1)%2==1 then
+                timebf = tsf+(tef-time)%(tef-tsf+1)
+            else
+                timebf = tef-(tef-time)%(tef-tsf+1)
+            end
+        elseif bftime == "Hold" then
+            local hldbf = InHold:GetSource(tsf).Value		
+            retimebf = Hold(hldbf)
+        elseif bftime == "Random" then
+            retimebf = Random(ssf, sef, rds, time)
+        elseif bftime == "DoNothing" then 
+            retimebf = time
+        end
+        if bftime ~= "Continue" and bftime ~= "Hold" and bftime ~= "Random" and bftime ~= "DoNothing" then
+                retimebf = XSheet(xsh, tsf, timebf)
+        end
+    end
+
+    if time > tef then									--determine after time behaviour
+        if aftime == "Constant" then					--since in all modes apart from "Continue" we want to retrieve values from within the active time range, we just need to figure out which times we pick them from
+            timeaf = tef
+        elseif aftime == "Continue" then				--since "Continue" generates new values instead of values already available in the retime functions, we need to do separate calculations for all modes
+                retimeaf = XSheet(xsh, tsf, tef) + ( XSheet(xsh, tsf, tef) - XSheet(xsh, tsf, tef-1) ) * (time-tef)
+        elseif aftime == "Loop" then
+            timeaf = tef - (tef-time)%(tef-tsf+1)
+        elseif aftime == "PingPong" then
+            if math.floor((tsf-time)/(tef-tsf)+1)%2==1 then
+                timeaf = tsf+(tef-time)%(tef-tsf)
+            else
+                timeaf = tef-(tef-time)%(tef-tsf)
+            end
+        elseif aftime == "InclusivePingPong" then
+            if math.floor((tsf-time-1)/(tef-tsf+1)+1)%2==1 then
+                timeaf = tsf+(tef-time)%(tef-tsf+1)
+            else
+                timeaf = tef-(tef-time)%(tef-tsf+1)
+            end
+        elseif aftime == "Hold" then
+            local hldaf = InHold:GetSource(tef).Value		
+            retimeaf = Hold(hldaf)
+        elseif aftime == "Random" then
+            retimeaf = Random(ssf, sef, rds, time)
+        elseif aftime == "DoNothing" then
+            retimeaf = time
+        end
+        if aftime ~= "Continue" and aftime ~= "Hold" and aftime ~= "Random" and aftime ~= "DoNothing" then
+                retimeaf = XSheet(xsh, tsf, timeaf)
+        end
+    end
+
+------------------------------------------------------------------- COLLECT ALL
+
+    if time < tsf then
+        retime = retimebf
+    elseif time > tef and ftg == 1 then
+        retime = retimeaf
+    else
+        retime = XSheet(xsh, tsf, time)
+    end
+
+------------------------------------------------------------------- ROUNDING OF OUTPUT VALUES
+
+    if oiv == "Down" then
+        retime = math.floor(retime)
+    end
+    if oiv == "Up" then
+        retime = math.ceil(retime)
+    end
+
+------------------------------------------------------------------- OUTPUT
+
+    -- if iotype == "Numbers" then
+        -- OutNumber:Set(req, Number(retime))
+    -- elseif iotype == "Values" then
+        -- retime = InParameter:GetSource(retime, REQF_SecondaryTime)
+        -- OutNumber:Set(req, Number(retime.Value))
+    -- end
+    
+    OutNumber:Set(req, Number(retime))
+
+end
