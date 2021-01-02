@@ -28,6 +28,8 @@ function Create()
         INP_DoNotifyChanged  = true,		-- this if for XSheet Frame Number Output
         INP_Default = 0,                    -- should be set to Global Start Time
         INP_MaxScale = 100,
+        INP_DelayDefault = true,
+        LINK_ForceSave = true,
         INP_Integer = true,
         LINK_Main = 1,
         })
@@ -448,6 +450,13 @@ function XSheet(xsh, tsf, time)
         return xsout[time-tsf+1]
     end
 
+end
+
+function OnAddToFlow()
+    -- local t_global_start = self.Comp.GlobalStart
+    -- dump(t_global_start)
+    -- InTargetStartTime:SetAttrs({ INP_Default = t_global_start })
+    InTargetStartTime:SetAttrs({ INP_Default = self.Comp.GlobalStart })
 end
 
 function Process(req)
