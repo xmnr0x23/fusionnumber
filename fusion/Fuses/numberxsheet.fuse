@@ -58,7 +58,7 @@ function Create()
     InXSheet = self:AddInput("", "XSheet", {
 --      INP_DoNotifyChanged  = true,
         ICD_Width = 0.7,
-        INP_External = false,
+        --INP_External = false,
         LINKID_DataType = "Text",
         INPID_InputControl = "TextEditControl",
         INPS_DefaultText = "",  		-- use instead of INP_Default!
