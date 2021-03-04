@@ -1,0 +1,516 @@
+Composition {
+	CurrentTime = 1001,
+	RenderRange = { 1001, 2001 },
+	GlobalRange = { 1001, 2001 },
+	CurrentID = 37,
+	HiQ = true,
+	PlaybackUpdateMode = 0,
+	Version = "Fusion Studio 9.0.2 build 15",
+	SavedOutputs = 0,
+	HeldTools = 0,
+	DisabledTools = 0,
+	LockedTools = 0,
+	AudioOffset = 0,
+	AutoRenderRange = true,
+	Resumable = true,
+	OutputClips = {
+	},
+	Tools = {
+		TextCreate1 = Fuse.TextCreate {
+			Inputs = {
+				Text = Input { Value = "1 to 4 hold", },
+			},
+			ViewInfo = OperatorInfo { Pos = { 770, 313.5 } },
+		},
+		NumberCreate1 = Fuse.NumberCreate {
+			Inputs = {
+				Number = Input {
+					SourceOp = "Random1",
+					Source = "Number",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, 280.5 } },
+		},
+		Random1 = KomkomDoorn.KD_NumberRandom {
+			CtrlWZoom = false,
+			Inputs = {
+				Minimumvalue = Input { Value = 1, },
+				Maximumvalue = Input { Value = 15, },
+				Seed = Input {
+					SourceOp = "SEED",
+					Source = "Output",
+				},
+				Newvalueforeveryfieldframe = Input { Value = 0, },
+				Newvalueeveryframes = Input { Value = 500, },
+				Interpolation = Input { Value = 0, },
+			},
+		},
+		NumberFloor1 = Fuse.NumberFloor {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberCreate1",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 770, 280.5 } },
+		},
+		TextFromNumber1 = Fuse.TextFromNumber {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberFloor1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, 280.5 } },
+		},
+		TextSubJoin1 = Fuse.TextSubJoin {
+			Inputs = {
+				Which = Input { Value = 1, },
+				Text1 = Input {
+					SourceOp = "TextCreate1",
+					Source = "Output",
+				},
+				Separator = Input { Value = " ", },
+				Text2 = Input {
+					SourceOp = "TextFromNumber1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, 313.5 } },
+		},
+		TextCreate1_1 = Fuse.TextCreate {
+			Inputs = {
+				Text = Input { Value = "5 to 6 hold", },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1100, 280.5 } },
+		},
+		NumberCreate1_1 = Fuse.NumberCreate {
+			Inputs = {
+				Number = Input {
+					SourceOp = "Random1_1",
+					Source = "Number",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, 247.5 } },
+		},
+		Random1_1 = KomkomDoorn.KD_NumberRandom {
+			CtrlWZoom = false,
+			Inputs = {
+				Minimumvalue = Input { Value = 1, },
+				Maximumvalue = Input { Value = 15, },
+				Seed = Input {
+					Value = 33,
+					Expression = "SEED.Output + 10",
+				},
+				Newvalueforeveryfieldframe = Input { Value = 0, },
+				Newvalueeveryframes = Input { Value = 500, },
+				Interpolation = Input { Value = 0, },
+			},
+		},
+		NumberFloor1_1 = Fuse.NumberFloor {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberCreate1_1",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1100, 247.5 } },
+		},
+		TextFromNumber1_1 = Fuse.TextFromNumber {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberFloor1_1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1210, 247.5 } },
+		},
+		TextSubJoin1_2 = Fuse.TextSubJoin {
+			CtrlWZoom = false,
+			Inputs = {
+				Which = Input { Value = 1, },
+				Text1 = Input {
+					SourceOp = "TextCreate1_1",
+					Source = "Output",
+				},
+				Text2 = Input {
+					SourceOp = "TextFromNumber1_1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1210, 280.5 } },
+		},
+		TextMultiLine1 = Fuse.TextMultiLine {
+			Inputs = {
+				Which = Input { Value = 1, },
+				Text1 = Input {
+					SourceOp = "TextSubJoin1",
+					Source = "Output",
+				},
+				Text2 = Input {
+					SourceOp = "TextSubJoin1_2",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1210, 313.5 } },
+		},
+		TIMING = PipeRouter {
+			NameSet = true,
+			Inputs = {
+				Input = Input {
+					SourceOp = "TextMultiLine1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = PipeRouterInfo { Pos = { 1265, 313.5 } },
+		},
+		NumberXSheet1 = Fuse.NumberXSheet {
+			CtrlWZoom = false,
+			Inputs = {
+				TargetStartTime = Input { Value = 1001, },
+				XSheet = Input {
+					SourceOp = "TIMING",
+					Source = "Output",
+				},
+				XFrameNumbers = Input {
+					Value = "1001  --  1\n1002  --  2\n1003  --  3\n1004  --  4\n1005  --  4\n1006  --  4\n1007  --  4\n1008  --  5\n1009  --  6\n1010  --  6\n1011  --  6\n1012  --  6\n1013  --  6\n1014  --  6\n1015  --  6\n1016  --  6\n1017  --  6\n1018  --  6\n1019  --  6\n1020  --  6\n1021  --  6\n1022  --  6\n",
+					Disabled = true,
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, 379.5 } },
+		},
+		SEED = Fuse.NumberCreate {
+			NameSet = true,
+			Inputs = {
+				Number = Input { Value = 23.1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, 214.5 } },
+		}
+	},
+	Views = {
+		{
+			FrameTypeID = "ChildFrame",
+			Mode = 3,
+			LayoutPreset = 0,
+			Left = 0,
+			Top = 27,
+			Width = 2560,
+			Height = 1283,
+			Views = ordered() {
+				Main = MultiView {
+					Active = "Flow",
+					ViewList = ordered() {
+						Flow = "FlowView",
+						Console = "ConsoleView",
+						Timeline = "TimelineView",
+						Spline = "SplineEditorView",
+						Info = "InfoView",
+						Chat = "ChatView"
+					},
+					Flow = FlowView {
+						Flags = {
+							AutoHideNavigator = true,
+							GridSnap = true,
+							AutoSnap = true,
+							ShowInstance = false,
+							FullIndicator = true
+						},
+						NavigatorSize = { 200, 140 },
+						Direction = "Horizontal",
+						PipeStyle = "Direct",
+						Scale = 1.41421,
+						Offset = { -287.767, -87.0015 }
+					},
+					Timeline = TimelineView {
+						TreeControlState = {
+						},
+						DisplayMode = "All Tools",
+						ShowCurrentTimeTools = false,
+						Filter = "Show All",
+						ShowSelectedTools = false,
+						ShowAnimatedToolsOnly = false,
+						ShowEditBoxes = false,
+						KeyFrameView = {
+							Position = { Left = 150, Bottom = 350 },
+							ScaleX = 2.14424951267057,
+							OffsetX = 952.046783625731,
+							OffsetY = 0,
+							AutoScaling = "scroll",
+							AutoSnapTo = "frame",
+							AutoSnapToGuidelines = false,
+							GuidelinesGrabEnabled = true,
+							GuidelinesSnapTo = "frame"
+						},
+						Spreadsheet = { LeftPos = 150, Visible = false }
+					},
+					Spline = SplineEditorView {
+						LeftPos = 238,
+						ScaleX = 0.2,
+						ScaleY = 0.00338983050847458,
+						OffsetX = 962.199999999999,
+						OffsetY = 0,
+						AutoScaling = "scroll",
+						AutoSnapTo = "frame",
+						AutoSnapToGuidelines = false,
+						GuidelinesSnapTo = "frame",
+						ShowKeyMarkers = false,
+						IndependentHandles = false,
+						ShowNonSplineModifiers = false,
+						GuidelinesGrabEnabled = true,
+						ShowOneToolOnly = false,
+						ShowSelectedTools = false,
+						ShowAllInputs = false,
+						Filter = "Show All"
+					},
+				},
+				Controls = MultiView {
+					Active = "Tools",
+					ViewList = ordered() {
+						Tools = "ControlView",
+						Modifiers = "ModifierView"
+					},
+				},
+				Left = "PreviewContainer",
+				Right = "PreviewContainer",
+				Transport = "TransportView",
+				Time = "TimeView"
+			},
+			Layout = {
+				Columns = 2,
+				RatioX = 1,
+				RatioY = 1,
+				{
+					Rows = 3,
+					RatioX = 0.458267716535433,
+					RatioY = 100,
+					{
+						Columns = 2,
+						RatioX = 1,
+						RatioY = 0.438559322033898,
+						{ ID = "Left", RatioX = 0.5, RatioY = 100, Pop = true },
+						{ ID = "Right", RatioX = 0.5, Pop = true },
+						Pop = true
+					},
+					{ ID = "Main", RatioY = 0.438559322033898, Pop = true },
+					{ ID = "Time", SnapY = 56, Flat = true }
+				},
+				{
+					Rows = 2,
+					PixelX = 342,
+					{ ID = "Controls", RatioX = 1, RatioY = 1 },
+					{ ID = "Transport", FixedY = -2 }
+				}
+			}
+		}
+	},
+	Prefs = {
+		Comp = {
+			NumberStyles = {
+				ClipFrame = 1
+			},
+			Paths = {
+				EnableReverseMapping = true,
+			},
+			FlowView = {
+				ShowInstanceLinks = false,
+				RemoveRouters = false,
+				FullToolIndicator = true,
+				ShowHidden = false,
+				GridSnap = true,
+			},
+			Tweaks = {
+				GPU = {
+					Enable = 2,
+					Caching = 2
+				},
+				NumBeatTimeouts = 20,
+				DisableCancelIO = false,
+				GraphicsMemory = 2048,
+				DisableDirectReads = false,
+			},
+			FrameFormat = {
+				GuideRatio = 1.77777777777778,
+				Name = "HD 1080",
+				DepthPreview = 3,
+				Rate = 24,
+				DepthFull = 3,
+				DepthInteractive = 3,
+			},
+			LastFile = "C:\\Users\\Kristof\\Desktop\\test_001_base_v01.0000.exr",
+			Preview = {
+				SkipFrames = true,
+				HiQ = true,
+			},
+			Unsorted = {
+				GlobalStart = 1001,
+				GlobalEnd = 2001
+			},
+			AVI = {
+				Preview = {
+					DataCheck = true,
+					Key = 15,
+					Handler = 1668707181,
+					KeyCheck = true,
+					DataRate = 300,
+					Quality = 75
+				}
+			},
+			Memory = {
+				Render = {
+					SimultaneousBranching = true
+				},
+				FramesAtOnce = 4,
+				Interactive = {
+					SimultaneousBranching = true,
+				}
+			},
+			ActionStrip = {
+				ToolbarName = "Default"
+			},
+			Import = {
+				OMF = {
+					FlowFormat = 0
+				},
+			},
+			Views = {
+				RightView = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PrevCtrlInactiveColor = 4278255360,
+					PickW = 1,
+					Set = true,
+					PickH = 1,
+					PrevCtrlActiveColor = 4278190335,
+					Viewer = {
+						EnableLUTs = false,
+						LUTPlugin = "FusionViewLUT",
+						NearZ = 0,
+						FitMarginX = 0,
+						FitMarginType = 0,
+						FarZ = -1000,
+						FitMarginY = 0
+					},
+					RulersShow = true
+				},
+				Left = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					Viewer = {
+						EnableLUTs = true,
+						LUTPlugin = "GamutViewLUT",
+					},
+				},
+				Right = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+				},
+				LeftView = {
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PrevCtrlInactiveColor = 4278255360,
+					PickW = 1,
+					Set = true,
+					PickH = 1,
+					PrevCtrlActiveColor = 4278190335,
+					Viewer = {
+						EnableLUTs = true,
+						LUTPlugin = "GamutViewLUT",
+						NearZ = 0,
+						FitMarginX = 0,
+						FitMarginType = 0,
+						FarZ = -1000,
+						FitMarginY = 0
+					},
+					RulersShow = true
+				},
+				View1 = {
+					PickH = 1,
+					PrevCtrlInactiveColor = 0,
+					FullScreen = false,
+					PrevCtrlActiveColor = 0,
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					AlwaysOnTop = true,
+					PickW = 1
+				},
+				View2 = {
+					PickH = 1,
+					AlwaysOnTop = true,
+					FullScreen = false,
+					PickW = 1
+				},
+			},
+			QuickTime = {
+			},
+		}
+	}
+}
+
+ 
