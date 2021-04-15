@@ -3,6 +3,8 @@
 -- ============================================================================
 FUSE_NAME = "NumberAdd"
 DATATYPE = "Number"
+--BTN_WIDTH = 0.33333
+BTN_WIDTH = 0.5
 
 -- ============================================================================
 -- fuse
@@ -19,37 +21,110 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
 
 function Create()
     -- [[ Creates the user interface. ]]
-    InTerm1 = self:AddInput("Term1" , "Term1" , {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "SliderControl",
-        LINK_Main = 1,
-        INP_MinScale = -100,
-        INP_MaxScale = 100,
-        INP_Default = 0
-    })
+    InTerm1 = self:AddInput(
+        "Term 1",
+        "Term1",
+        {
+            IC_Steps = 201,
+            INPID_InputControl = "SliderControl",
+            INP_Default = 0,
+            INP_MaxScale = 100,
+            INP_MinScale = -100,
+            LINKID_DataType = "Number",
+            LINK_Main = 1,
+        }
+    )
 
-    InTerm2 = self:AddInput("Term2" , "Term2" , {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "SliderControl",
-        LINK_Main = 2,
-        INP_MinScale = -100,
-        INP_MaxScale = 100,
-        INP_Default = 0
-    })
+    InTerm1External = self:AddInput(
+        "External",
+        "Term1External",
+        {
+            ICD_Width = BTN_WIDTH,
+            INPID_InputControl = "CheckboxControl",
+            INP_Default = 0.0,
+            INP_DoNotifyChanged = true,
+            INP_External = false,
+            INP_Integer = true,
+            LINKID_DataType = "Number",
+        }
+    )
 
-    InShowInput = self:AddInput("Show Input", "ShowInput", {
-        LINKID_DataType = "Number",
-        INPID_InputControl = "CheckboxControl",
-        INP_Integer = true,
-        INP_Default = 0.0,
-        INP_External = false,
-        INP_DoNotifyChanged = true
-    })
+    InTerm1Wire = self:AddInput(
+        "Wire",
+        "Term1Wire",
+        {
+            ICD_Width = BTN_WIDTH,
+            IC_Visible = false,
+            INPID_InputControl = "CheckboxControl",
+            INP_Default = 0.0,
+            INP_DoNotifyChanged = true,
+            INP_External = false,
+            INP_Integer = true,
+            LINKID_DataType = "Number",
+        }
+    )
 
-    OutNumber = self:AddOutput("Output", "Output", {
-        LINKID_DataType = "Number",
-        LINK_Main = 1
-    })
+    InTerm1Separator = self:AddInput(
+        "Term1Separator",
+        "Term1Separator",
+        {
+            IC_Visible = true,
+            INPID_InputControl = "SeparatorControl",
+            INP_External = false,
+        }
+    )
+
+    InTerm2 = self:AddInput(
+        "Term 2",
+        "Term2",
+        {
+            IC_Steps = 201,
+            INPID_InputControl = "SliderControl",
+            INP_Default = 0,
+            INP_MaxScale = 100,
+            INP_MinScale = -100,
+            LINKID_DataType = "Number",
+            LINK_Main = 2,
+        }
+    )
+
+    InTerm2External = self:AddInput(
+        "External",
+        "Term2External",
+        {
+            ICD_Width = BTN_WIDTH,
+            INPID_InputControl = "CheckboxControl",
+            INP_Default = 0.0,
+            INP_DoNotifyChanged = true,
+            INP_External = false,
+            INP_Integer = true,
+            LINKID_DataType = "Number",
+        }
+    )
+    
+    InTerm2Wire = self:AddInput(
+        "Wire",
+        "Term2Wire",
+        {
+            ICD_Width = BTN_WIDTH,
+            IC_Visible = false,
+            INPID_InputControl = "CheckboxControl",
+            INP_Default = 0.0,
+            INP_DoNotifyChanged = true,
+            INP_External = false,
+            INP_Integer = true,
+            LINKID_DataType = "Number",
+        }
+    )
+
+    Output = self:AddOutput(
+        "Output",
+        "Output",
+        {
+            LINKID_DataType = "Number",
+            LINK_Main = 1,
+        }
+    )
 end
 
 function NotifyChanged(inp, param, time)
@@ -65,10 +140,50 @@ function NotifyChanged(inp, param, time)
         :param time: Current frame number.
         :type time: float
     ]]
-    if inp == InShowInput then
+
+    if inp == InTerm1External then
+        if param.Value == 1.0 then
+            InTerm1Wire:SetAttrs({IC_Visible = true})
+            InTerm1Wire:SetSource(Number(1), 0, 0)
+            InTerm1:SetAttrs({LINK_Visible = true})
+        else
+            InTerm1Wire:SetAttrs({IC_Visible = false})
+            InTerm1Wire:SetSource(Number(0), 0, 0)
+            InTerm1:SetAttrs({LINK_Visible = false})
+            self.Comp:Execute(self.Name .. ".Term1:ConnectTo(nil)")
+        end
+    end
+
+    if inp == InTerm1Wire then
         local visible
-        if param.Value == 1.0 then visible = true else visible = false end
+        if param.Value == 1.0 then
+            visible = true
+        else
+            visible = false
+        end
         InTerm1:SetAttrs({LINK_Visible = visible})
+    end
+    
+    if inp == InTerm2External then
+        if param.Value == 1.0 then
+            InTerm2Wire:SetAttrs({IC_Visible = true})
+            InTerm2Wire:SetSource(Number(1), 0, 0)
+            InTerm2:SetAttrs({LINK_Visible = true})
+        else
+            InTerm2Wire:SetAttrs({IC_Visible = false})
+            InTerm2Wire:SetSource(Number(0), 0, 0)
+            InTerm2:SetAttrs({LINK_Visible = false})
+            self.Comp:Execute(self.Name .. ".Term2:ConnectTo(nil)")
+        end
+    end
+    
+    if inp == InTerm2Wire then
+        local visible
+        if param.Value == 1.0 then
+            visible = true
+        else
+            visible = false
+        end
         InTerm2:SetAttrs({LINK_Visible = visible})
     end
 end
@@ -80,5 +195,8 @@ function Process(req)
 
     local result = n1 + n2
     local out = Number(result)
-    OutNumber:Set(req, out)
+    
+    --DisconnectInput(InTerm1)
+
+    Output:Set(req, out)
 end
